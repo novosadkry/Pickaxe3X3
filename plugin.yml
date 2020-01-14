@@ -1,0 +1,5 @@
+name: Pickaxe3X3
+main: cz.novosadkry.Pickaxe3X3.Main
+version: 1.0
+api-version: 1.15
+commands:
