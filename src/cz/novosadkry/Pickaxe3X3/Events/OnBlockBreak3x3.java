@@ -2,8 +2,6 @@ package cz.novosadkry.Pickaxe3X3.Events;
 
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
-import cz.novosadkry.Pickaxe3X3.Config.MainCfg;
-import cz.novosadkry.Pickaxe3X3.Config.MineableItems;
 import cz.novosadkry.Pickaxe3X3.EventHandlers.BlockBreak3x3Event;
 import cz.novosadkry.Pickaxe3X3.Main;
 import org.bukkit.GameMode;
@@ -26,7 +24,7 @@ import java.util.List;
 
 public class OnBlockBreak3x3 implements Listener {
     public BlockFace getBlockFace(Player player) {
-        List<Block> lastTwoTargetBlocks = player.getLastTwoTargetBlocks(null, MainCfg.getBlockFaceCheckRange());
+        List<Block> lastTwoTargetBlocks = player.getLastTwoTargetBlocks(null, Main.mainConfig.blockFaceCheckRange);
         if (lastTwoTargetBlocks.size() != 2 || !lastTwoTargetBlocks.get(1).getType().isOccluding()) return null;
         Block targetBlock = lastTwoTargetBlocks.get(1);
         Block adjacentBlock = lastTwoTargetBlocks.get(0);
@@ -45,7 +43,7 @@ public class OnBlockBreak3x3 implements Listener {
 
             // Get corresponding item list
             if (item.getType().toString().contains("PICKAXE"))
-                mineable = MineableItems.getPickaxeItems();
+                mineable = Main.mineableItemsConfig.pickaxeItems;
             else
                 mineable = Collections.emptyList();
 

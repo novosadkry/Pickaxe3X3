@@ -1,7 +1,7 @@
 package cz.novosadkry.Pickaxe3X3.Events;
 
-import cz.novosadkry.Pickaxe3X3.Config.MainCfg;
 import cz.novosadkry.Pickaxe3X3.EventHandlers.BlockBreak3x3Event;
+import cz.novosadkry.Pickaxe3X3.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,7 +18,7 @@ public class OnBlockBreak implements Listener {
         try {
             if (item.getItemMeta().getLore().size() > 0) {
                 for (String s : item.getItemMeta().getLore()) {
-                    if (s.startsWith(MainCfg.getPrefix())) {
+                    if (s.startsWith(Main.mainConfig.prefix)) {
                         String[] split = s.split(" ")[1].split("x");
                         int columns = Integer.parseInt(split[0]);
                         int rows = Integer.parseInt(split[1]);

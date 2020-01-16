@@ -10,8 +10,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class MineableItems {
-    private static List<Material> pickaxeItems = Arrays.asList(
+public class MineableItemsConfig {
+    public List<Material> pickaxeItems = Arrays.asList(
             Material.STONE,
             Material.COBBLESTONE,
             Material.SANDSTONE,
@@ -30,13 +30,11 @@ public class MineableItems {
             Material.NETHER_QUARTZ_ORE
     );
 
-    public static List<Material> getPickaxeItems() {
-        return pickaxeItems;
-    }
-
-    public static void load() {
+    public static MineableItemsConfig load() {
         File file = new File(String.join(File.separator, ".", "plugins", "Pickaxe3X3", "mineable.yml"));
-        YamlConfiguration config;
+        YamlConfiguration yamlConfig;
+
+        MineableItemsConfig mineableItemsConfig = new MineableItemsConfig();
 
         if (!file.exists()) {
             try {
@@ -44,13 +42,13 @@ public class MineableItems {
                 file.createNewFile();
 
                 List<String> items = new ArrayList<String>();
-                for (Material m : pickaxeItems) {
+                for (Material m : mineableItemsConfig.pickaxeItems) {
                     items.add(m.toString());
                 }
 
-                config = YamlConfiguration.loadConfiguration(file);
-                config.set("pickaxe", items);
-                config.save(file);
+                yamlConfig = YamlConfiguration.loadConfiguration(file);
+                yamlConfig.set("pickaxe", items);
+                yamlConfig.save(file);
 
                 System.out.println("[Pickaxe3X3] Unable to find configuration file mineable.yml, switching to default settings");
             } catch (IOException e) {
@@ -59,19 +57,21 @@ public class MineableItems {
         }
 
         try {
-            config = YamlConfiguration.loadConfiguration(file);
+            yamlConfig = YamlConfiguration.loadConfiguration(file);
             List<Material> items = new ArrayList<>();
 
-            for (String s : (List<String>)config.get("pickaxe")){
+            for (String s : (List<String>)yamlConfig.get("pickaxe")){
                 Material m = Material.matchMaterial(s);
                 if (m != null)
                     items.add(m);
             }
 
             System.out.println("[Pickaxe3X3] Successfully loaded configuration file mineable.yml");
-            pickaxeItems = items;
+            mineableItemsConfig.pickaxeItems = items;
         } catch (Exception e) {
             System.out.println("[Pickaxe3X3] Error occurred while reading configuration file mineable.yml, switching to default settings");
         }
+
+        return mineableItemsConfig;
     }
 }
