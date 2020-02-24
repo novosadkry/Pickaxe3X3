@@ -53,7 +53,7 @@ public class OnBlockBreak3x3 implements Listener {
 
             // Get surrounding blocks and break them with item-in-hand
             Block[][] blocksToDestroy = getSurroundingBlocks(baseBlock, player, event.getRows(), event.getColumns());
-            int count = breakBlocks(mineable, baseBlock, blocksToDestroy, player, item);
+            int count = breakBlocks(mineable, blocksToDestroy, player, item);
 
             // Change the durability of the item-in-hand
             if (item.getItemMeta() instanceof Damageable) {
@@ -110,11 +110,24 @@ public class OnBlockBreak3x3 implements Listener {
         return blocksToDestroy;
     }
 
-    public int breakBlocks(List<Material> mineable, Block baseBlock, Block[][] blocksToDestroy, Player player, ItemStack item) {
-        int count = 0;
+    public int breakBlocks(List<Material> mineable, Block[][] blocksToDestroy, Player player, ItemStack item) {
+        int canDestroy = -1;
 
+        // Check how many items can item-in-hand destroy
+        if (item.getItemMeta() instanceof Damageable) {
+            if (player.getGameMode() != GameMode.CREATIVE) {
+                Damageable damageMeta = (Damageable)item.getItemMeta();
+                canDestroy = item.getType().getMaxDurability() - damageMeta.getDamage();
+            }
+        }
+
+        int count = 0;
         for (int y = 0; y < blocksToDestroy.length; y++) {
             for (int x = 0; x < blocksToDestroy[y].length; x++) {
+                // Check if item-in-hand has enough durability ('+ 1' stands for the base-block)
+                if (count + 1 >= canDestroy && canDestroy != -1)
+                    break;
+
                 // Continue if block-to-destroy isn't mineable
                 if (!mineable.contains(blocksToDestroy[y][x].getType()))
                     continue;
@@ -123,17 +136,7 @@ public class OnBlockBreak3x3 implements Listener {
                 if (blocksToDestroy[y][x].getDrops(item).size() < 1)
                     continue;
 
-                // Check if item-in-hand has enough durability
-                if (item.getItemMeta() instanceof Damageable) {
-                    if (player.getGameMode() != GameMode.CREATIVE) {
-                        Damageable damageMeta = (Damageable)item.getItemMeta();
-
-                        // (count + 1) -- We also need to count the middle block
-                        if (item.getType().getMaxDurability() - damageMeta.getDamage() < count + 1)
-                            break;
-                    }
-                }
-
+                // Always set to 'true', there is a chance that a supported plugin won't load
                 boolean hasPerms = true;
                 if (Main.residence != null) {
                     // Check if player has permissions to destroy a certain block inside a residence
@@ -141,20 +144,15 @@ public class OnBlockBreak3x3 implements Listener {
                     hasPerms = perms.playerHas(player, Flags.destroy, true);
                 }
 
-                if (hasPerms)
-                {
-
+                if (hasPerms) {
                     // Check if item-in-hand has silk touch
-                    if (item.getItemMeta().hasEnchant(Enchantment.SILK_TOUCH))
-                    {
+                    if (item.getItemMeta().hasEnchant(Enchantment.SILK_TOUCH)) {
                         Material m = blocksToDestroy[y][x].getType();
                         blocksToDestroy[y][x].setType(Material.AIR);
                         blocksToDestroy[y][x].getLocation().getWorld().dropItemNaturally(
                                 blocksToDestroy[y][x].getLocation(),
                                 new ItemStack(m, 1));
-                    }
-
-                    else
+                    } else
                         blocksToDestroy[y][x].breakNaturally(item);
 
                     count++;
