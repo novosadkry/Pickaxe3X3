@@ -1,18 +1,23 @@
 package cz.novosadkry.Pickaxe3X3.EventHandlers;
 
+import org.bukkit.block.Block;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.block.BlockBreakEvent;
 
 public class BlockBreak3x3Event extends Event {
     private BlockBreakEvent event;
+    private Block[] blocks;
+    private Block baseBlock;
     private int rows;
     private int columns;
 
     private static final HandlerList HANDLERS = new HandlerList();
 
-    public BlockBreak3x3Event(int rows, int columns, BlockBreakEvent event) {
+    public BlockBreak3x3Event(BlockBreakEvent event, int rows, int columns, Block[] blocks) {
         this.event = event;
+        this.baseBlock = event.getBlock();
+        this.blocks = blocks;
         this.rows = rows;
         this.columns = columns;
     }
@@ -35,5 +40,13 @@ public class BlockBreak3x3Event extends Event {
 
     public int getColumns() {
         return columns;
+    }
+
+    public Block[] getSurroundingBlocks() {
+        return blocks;
+    }
+
+    public Block getBaseBlock() {
+        return baseBlock;
     }
 }

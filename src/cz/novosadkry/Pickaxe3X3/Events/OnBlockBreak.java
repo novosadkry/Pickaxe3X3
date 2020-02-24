@@ -2,7 +2,9 @@ package cz.novosadkry.Pickaxe3X3.Events;
 
 import cz.novosadkry.Pickaxe3X3.EventHandlers.BlockBreak3x3Event;
 import cz.novosadkry.Pickaxe3X3.Main;
+import cz.novosadkry.Pickaxe3X3.Methods.BlockBreak3x3Logic;
 import org.bukkit.Bukkit;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -23,11 +25,16 @@ public class OnBlockBreak implements Listener {
                         int columns = Integer.parseInt(split[0]);
                         int rows = Integer.parseInt(split[1]);
 
-                        Bukkit.getPluginManager().callEvent(new BlockBreak3x3Event(rows, columns, event));
+                        Block baseBlock = event.getBlock();
+                        Block[] blocks = new BlockBreak3x3Logic(player, baseBlock, rows, columns).run();
+
+                        Bukkit.getPluginManager().callEvent(new BlockBreak3x3Event(event, rows, columns, blocks));
                         break;
                     }
                 }
             }
-        } catch (Exception e) { }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
