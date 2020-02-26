@@ -4,10 +4,7 @@ import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.google.common.collect.Iterables;
 import cz.novosadkry.Pickaxe3X3.Main;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.enchantments.Enchantment;
@@ -76,7 +73,7 @@ public class BlockBreak3x3Logic {
                 return null;
 
             // Get surrounding blocks and break them with item-in-hand
-            Block[] blocks = breakBlocks(mineable, getSurroundingBlocks(), item);
+            Block[] blocks = breakBlocks(mineable, baseBlock, getSurroundingBlocks(), item);
             int count = blocks.length;
 
             // Change the durability of the item-in-hand
@@ -139,7 +136,7 @@ public class BlockBreak3x3Logic {
         return blocksToDestroy;
     }
 
-    private Block[] breakBlocks(List<Material> mineable, Block[][] blocksToDestroy, ItemStack item) {
+    private Block[] breakBlocks(List<Material> mineable, Block baseBlock, Block[][] blocks, ItemStack item) {
         int canDestroy = -1;
 
         // Check how many items can item-in-hand destroy
@@ -150,46 +147,51 @@ public class BlockBreak3x3Logic {
             }
         }
 
-        ArrayList<Block> destroyedBlocks = new ArrayList<Block>();
+        ArrayList<Block> blocksToDestroy = new ArrayList<Block>();
+        blocksToDestroy.add(baseBlock);
 
-        for (int y = 0; y < blocksToDestroy.length; y++) {
-            for (int x = 0; x < blocksToDestroy[y].length; x++) {
-                // Check if item-in-hand has enough durability ('+ 1' stands for the base-block)
-                if (destroyedBlocks.size() + 1 >= canDestroy && canDestroy != -1)
+        // Add blocks to blocksToDestroy
+        for (int y = 0; y < blocks.length; y++) {
+            for (int x = 0; x < blocks[y].length; x++) {
+                // Break loop if item-in-hand doesn't have enough durability
+                if (blocksToDestroy.size() >= canDestroy && canDestroy != -1)
                     break;
 
-                // Continue if block-to-destroy isn't mineable
-                if (!mineable.contains(blocksToDestroy[y][x].getType()))
-                    continue;
-
-                // Continue if block-to-destroy can't be broken by item-in-hand
-                if (blocksToDestroy[y][x].getDrops(item).size() < 1)
+                /*
+                   Continue if block-to-destroy is base-block
+                            or block-to-destroy isn't mineable
+                            or block-to-destroy can't be broken by item-in-hand
+                */
+                if (blocks[y][x].equals(baseBlock)
+                        || !mineable.contains(blocks[y][x].getType())
+                        || blocks[y][x].getDrops(item).size() < 1)
                     continue;
 
                 // Always set to 'true', there is a chance that a supported plugin won't load
                 boolean hasPerms = true;
                 if (Main.residence != null) {
                     // Check if player has permissions to destroy a certain block inside a residence
-                    FlagPermissions perms = Main.residence.getPermsByLoc(blocksToDestroy[y][x].getLocation());
+                    FlagPermissions perms = Main.residence.getPermsByLoc(blocks[y][x].getLocation());
                     hasPerms = perms.playerHas(player, Flags.destroy, true);
                 }
 
-                if (hasPerms) {
-                    // Check if item-in-hand has silk touch
-                    if (item.getItemMeta().hasEnchant(Enchantment.SILK_TOUCH)) {
-                        Material m = blocksToDestroy[y][x].getType();
-                        blocksToDestroy[y][x].setType(Material.AIR);
-                        blocksToDestroy[y][x].getLocation().getWorld().dropItemNaturally(
-                                blocksToDestroy[y][x].getLocation(),
-                                new ItemStack(m, 1));
-                    } else
-                        blocksToDestroy[y][x].breakNaturally(item);
-
-                    destroyedBlocks.add(blocksToDestroy[y][x]);
-                }
+                if (hasPerms)
+                    blocksToDestroy.add(blocks[y][x]);
             }
         }
 
-        return Iterables.toArray(destroyedBlocks, Block.class);
+        // Break blocks in blocksToDestroy
+        for (Block block : blocksToDestroy) {
+            if (item.getItemMeta().hasEnchant(Enchantment.SILK_TOUCH)) {
+                Material m = block.getType();
+                block.setType(Material.AIR);
+                block.getLocation().getWorld().dropItemNaturally(
+                        block.getLocation(),
+                        new ItemStack(m, 1));
+            } else
+                block.breakNaturally(item);
+        }
+
+        return Iterables.toArray(blocksToDestroy, Block.class);
     }
 }

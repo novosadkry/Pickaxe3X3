@@ -8,7 +8,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 public class BlockBreak3x3Event extends Event {
     private BlockBreakEvent event;
     private Block[] blocks;
-    private Block baseBlock;
     private int rows;
     private int columns;
 
@@ -16,7 +15,6 @@ public class BlockBreak3x3Event extends Event {
 
     public BlockBreak3x3Event(BlockBreakEvent event, int rows, int columns, Block[] blocks) {
         this.event = event;
-        this.baseBlock = event.getBlock();
         this.blocks = blocks;
         this.rows = rows;
         this.columns = columns;
@@ -42,11 +40,7 @@ public class BlockBreak3x3Event extends Event {
         return columns;
     }
 
-    public Block[] getSurroundingBlocks() {
+    public Block[] getBlocks() {
         return blocks;
-    }
-
-    public Block getBaseBlock() {
-        return baseBlock;
     }
 }

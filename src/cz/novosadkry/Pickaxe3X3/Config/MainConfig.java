@@ -33,8 +33,8 @@ public class MainConfig {
 
         try {
             yamlConfig = YamlConfiguration.loadConfiguration(file);
-            mainConfig.prefix = (String)yamlConfig.get("prefix");
-            mainConfig.blockFaceCheckRange = (Integer)yamlConfig.get("blockFaceCheckRange");
+            mainConfig.prefix = yamlConfig.getString("prefix");
+            mainConfig.blockFaceCheckRange = yamlConfig.getInt("blockFaceCheckRange");
 
             System.out.println("[Pickaxe3X3] Successfully loaded configuration file main.yml");
         } catch (Exception e) {
