@@ -2,13 +2,13 @@ package cz.novosadkry.Pickaxe3X3.Methods;
 
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
-import com.google.common.collect.Iterables;
 import cz.novosadkry.Pickaxe3X3.Main;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -55,7 +55,7 @@ public class BlockBreak3x3Logic {
         return targetBlock.getFace(adjacentBlock);
     }
 
-    public Block[] run() {
+    public int run() {
         ItemStack item = player.getInventory().getItemInMainHand();
         BlockFace blockFace = getBlockFace(player);
 
@@ -70,11 +70,10 @@ public class BlockBreak3x3Logic {
 
             // Return if base-block isn't mineable or can't be broken by item-in-hand
             if (!mineable.contains(baseBlock.getType()) || baseBlock.getDrops(item).size() < 1)
-                return null;
+                return 0;
 
             // Get surrounding blocks and break them with item-in-hand
-            Block[] blocks = breakBlocks(mineable, baseBlock, getSurroundingBlocks(), item);
-            int count = blocks.length;
+            int count = breakBlocks(mineable, baseBlock, getSurroundingBlocks(), item);
 
             // Change the durability of the item-in-hand
             if (item.getItemMeta() instanceof Damageable) {
@@ -92,11 +91,10 @@ public class BlockBreak3x3Logic {
                 }
             }
 
-            return blocks;
-            // Bukkit.getPluginManager().callEvent(new BlockBreak3x3Event(count, 1, null)); | Vyvoláno až v BlockBreakEvent
+            return count;
         }
 
-        return null;
+        return 0;
     }
 
     private Block[][] getSurroundingBlocks() {
@@ -136,7 +134,7 @@ public class BlockBreak3x3Logic {
         return blocksToDestroy;
     }
 
-    private Block[] breakBlocks(List<Material> mineable, Block baseBlock, Block[][] blocks, ItemStack item) {
+    private int breakBlocks(List<Material> mineable, Block baseBlock, Block[][] blocks, ItemStack item) {
         int canDestroy = -1;
 
         // Check how many items can item-in-hand destroy
@@ -147,7 +145,7 @@ public class BlockBreak3x3Logic {
             }
         }
 
-        ArrayList<Block> blocksToDestroy = new ArrayList<Block>();
+        List<Block> blocksToDestroy = new ArrayList<Block>();
         blocksToDestroy.add(baseBlock);
 
         // Add blocks to blocksToDestroy
@@ -182,6 +180,10 @@ public class BlockBreak3x3Logic {
 
         // Break blocks in blocksToDestroy
         for (Block block : blocksToDestroy) {
+            BlockBreakEvent event = new BlockBreakEvent(block, player);
+            event.setCancelled(true);
+            Bukkit.getPluginManager().callEvent(event);
+
             if (item.getItemMeta().hasEnchant(Enchantment.SILK_TOUCH)) {
                 Material m = block.getType();
                 block.setType(Material.AIR);
@@ -192,6 +194,6 @@ public class BlockBreak3x3Logic {
                 block.breakNaturally(item);
         }
 
-        return Iterables.toArray(blocksToDestroy, Block.class);
+        return blocksToDestroy.size();
     }
 }

@@ -1,9 +1,7 @@
 package cz.novosadkry.Pickaxe3X3.Events;
 
-import cz.novosadkry.Pickaxe3X3.EventHandlers.BlockBreak3x3Event;
 import cz.novosadkry.Pickaxe3X3.Main;
 import cz.novosadkry.Pickaxe3X3.Methods.BlockBreak3x3Logic;
-import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,10 +12,13 @@ import org.bukkit.inventory.ItemStack;
 import java.util.List;
 
 public class OnBlockBreak implements Listener {
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
         ItemStack item = player.getInventory().getItemInMainHand();
+
+        if (event.isCancelled())
+            return;
 
         try {
             List<String> lore = item.getItemMeta().getLore();
@@ -31,17 +32,14 @@ public class OnBlockBreak implements Listener {
                             int rows = Integer.parseInt(split[1]);
 
                             Block baseBlock = event.getBlock();
-                            Block[] blocks = new BlockBreak3x3Logic(player, baseBlock, rows, columns).run();
+                            new BlockBreak3x3Logic(player, baseBlock, rows, columns).run();
 
-                            Bukkit.getPluginManager().callEvent(new BlockBreak3x3Event(event, rows, columns, blocks));
                             event.setCancelled(true);
                             break;
                         }
                     }
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        } catch (Exception e) { }
     }
 }
