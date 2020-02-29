@@ -2,6 +2,10 @@ package cz.novosadkry.Pickaxe3X3.Methods;
 
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
+import com.gamingmesh.jobs.Jobs;
+import com.gamingmesh.jobs.actions.BlockActionInfo;
+import com.gamingmesh.jobs.container.ActionType;
+import com.gamingmesh.jobs.container.JobsPlayer;
 import cz.novosadkry.Pickaxe3X3.Main;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -183,6 +187,11 @@ public class BlockBreak3x3Logic {
             BlockBreakEvent event = new BlockBreakEvent(block, player);
             event.setCancelled(true);
             Bukkit.getPluginManager().callEvent(event);
+
+            if (Main.jobs != null) {
+                JobsPlayer jPlayer = Jobs.getPlayerManager().getJobsPlayer(player);
+                Jobs.action(jPlayer, new BlockActionInfo(block, ActionType.BREAK));
+            }
 
             if (item.getItemMeta().hasEnchant(Enchantment.SILK_TOUCH)) {
                 Material m = block.getType();

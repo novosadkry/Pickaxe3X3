@@ -60,7 +60,7 @@ public class MineableItemsConfig {
             yamlConfig = YamlConfiguration.loadConfiguration(file);
             List<Material> items = new ArrayList<>();
 
-            for (String s : (List<String>)yamlConfig.get("pickaxe")){
+            for (String s : yamlConfig.getStringList("pickaxe")) {
                 Material m = Material.matchMaterial(s);
                 if (m != null)
                     items.add(m);
