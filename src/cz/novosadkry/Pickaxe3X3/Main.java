@@ -17,10 +17,16 @@ public class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         if (getServer().getPluginManager().isPluginEnabled("Residence"))
+        {
             residence = Residence.getInstance();
+            System.out.println("[Pickaxe3X3] Residence found");
+        }
 
         if (getServer().getPluginManager().isPluginEnabled("Jobs"))
+        {
             jobs = Jobs.getInstance();
+            System.out.println("[Pickaxe3X3] Jobs found");
+        }
 
         mainConfig = MainConfig.load();
         mineableItemsConfig = MineableItemsConfig.load();
