@@ -182,12 +182,17 @@ public class BlockBreak3x3Logic {
             }
         }
 
+        // Preserve item lore before manually calling BlockBreak event
+        List<String> lore = new ArrayList<>(item.getItemMeta().getLore());
+
+        // Clear item lore before manually calling BlockBreak event to prevent stack overflow
+        ItemMeta meta = item.getItemMeta();
+        meta.setLore(new ArrayList<>());
+        item.setItemMeta(meta);
+        player.getInventory().setItemInMainHand(item);
+
         // Break blocks in blocksToDestroy
         for (Block block : blocksToDestroy) {
-            BlockBreakEvent event = new BlockBreakEvent(block, player);
-            event.setCancelled(true);
-            Bukkit.getPluginManager().callEvent(event);
-
             if (Main.jobs != null) {
                 JobsPlayer jPlayer = Jobs.getPlayerManager().getJobsPlayer(player);
                 Jobs.action(jPlayer, new BlockActionInfo(block, ActionType.BREAK));
@@ -201,8 +206,21 @@ public class BlockBreak3x3Logic {
                         new ItemStack(m, 1));
             } else
                 block.breakNaturally(item);
+
+            callBlockBreakEvent(player, block);
         }
 
+        // Set item lore back
+        meta.setLore(lore);
+        item.setItemMeta(meta);
+        player.getInventory().setItemInMainHand(item);
+
         return blocksToDestroy.size();
+    }
+
+    void callBlockBreakEvent(Player player, Block block)
+    {
+        BlockBreakEvent event = new BlockBreakEvent(block, player);
+        Bukkit.getPluginManager().callEvent(event);
     }
 }
