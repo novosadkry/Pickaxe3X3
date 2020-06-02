@@ -51,14 +51,6 @@ public class BlockBreak3x3Logic {
         return columns;
     }
 
-    private BlockFace getBlockFace(Player player) {
-        List<Block> lastTwoTargetBlocks = player.getLastTwoTargetBlocks(null, Main.mainConfig.blockFaceCheckRange);
-        if (lastTwoTargetBlocks.size() != 2 || !lastTwoTargetBlocks.get(1).getType().isOccluding()) return null;
-        Block targetBlock = lastTwoTargetBlocks.get(1);
-        Block adjacentBlock = lastTwoTargetBlocks.get(0);
-        return targetBlock.getFace(adjacentBlock);
-    }
-
     public int run() {
         ItemStack item = player.getInventory().getItemInMainHand();
         BlockFace blockFace = getBlockFace(player);
@@ -77,7 +69,7 @@ public class BlockBreak3x3Logic {
                 return 0;
 
             // Get surrounding blocks and break them with item-in-hand
-            int count = breakBlocks(mineable, baseBlock, getSurroundingBlocks(), item);
+            int count = run(mineable, getSurroundingBlocks(), item);
 
             // Change the durability of the item-in-hand
             if (item.getItemMeta() instanceof Damageable) {
@@ -99,6 +91,44 @@ public class BlockBreak3x3Logic {
         }
 
         return 0;
+    }
+
+    private int run(List<Material> mineable, Block[][] blocks, ItemStack item) {
+        int canDestroy = -1;
+
+        // Check how many items can item-in-hand destroy
+        if (item.getItemMeta() instanceof Damageable) {
+            if (player.getGameMode() != GameMode.CREATIVE) {
+                Damageable damageMeta = (Damageable)item.getItemMeta();
+                canDestroy = item.getType().getMaxDurability() - damageMeta.getDamage();
+            }
+        }
+
+        // Add blocks to blocksToDestroy
+        Block[] blocksToDestroy = getBlocksToDestroy(blocks, item, canDestroy, mineable);
+
+        // Return if there are no blocks to destroy
+        if (blocksToDestroy.length < 1)
+            return 0;
+
+        // Preserve item lore before manually calling BlockBreak event
+        List<String> lore = new ArrayList<>(item.getItemMeta().getLore());
+
+        // Clear item lore before manually calling BlockBreak event to prevent stack overflow
+        ItemMeta meta = item.getItemMeta();
+        meta.setLore(new ArrayList<>());
+        item.setItemMeta(meta);
+        player.getInventory().setItemInMainHand(item);
+
+        // Break blocks in blocksToDestroy
+        breakBlocks(blocksToDestroy, item);
+
+        // Set item lore back
+        meta.setLore(lore);
+        item.setItemMeta(meta);
+        player.getInventory().setItemInMainHand(item);
+
+        return blocksToDestroy.length;
     }
 
     private Block[][] getSurroundingBlocks() {
@@ -138,20 +168,8 @@ public class BlockBreak3x3Logic {
         return blocksToDestroy;
     }
 
-    private int breakBlocks(List<Material> mineable, Block baseBlock, Block[][] blocks, ItemStack item) {
-        int canDestroy = -1;
-
-        // Check how many items can item-in-hand destroy
-        if (item.getItemMeta() instanceof Damageable) {
-            if (player.getGameMode() != GameMode.CREATIVE) {
-                Damageable damageMeta = (Damageable)item.getItemMeta();
-                canDestroy = item.getType().getMaxDurability() - damageMeta.getDamage();
-            }
-        }
-
+    private Block[] getBlocksToDestroy(Block[][] blocks, ItemStack item, int canDestroy, List<Material> mineable) {
         List<Block> blocksToDestroy = new ArrayList<Block>();
-        blocksToDestroy.add(baseBlock);
-
         // Add blocks to blocksToDestroy
         for (int y = 0; y < blocks.length; y++) {
             for (int x = 0; x < blocks[y].length; x++) {
@@ -182,16 +200,10 @@ public class BlockBreak3x3Logic {
             }
         }
 
-        // Preserve item lore before manually calling BlockBreak event
-        List<String> lore = new ArrayList<>(item.getItemMeta().getLore());
+        return blocksToDestroy.toArray(new Block[0]);
+    }
 
-        // Clear item lore before manually calling BlockBreak event to prevent stack overflow
-        ItemMeta meta = item.getItemMeta();
-        meta.setLore(new ArrayList<>());
-        item.setItemMeta(meta);
-        player.getInventory().setItemInMainHand(item);
-
-        // Break blocks in blocksToDestroy
+    private void breakBlocks(Block[] blocksToDestroy, ItemStack item) {
         for (Block block : blocksToDestroy) {
             if (Main.jobs != null) {
                 JobsPlayer jPlayer = Jobs.getPlayerManager().getJobsPlayer(player);
@@ -209,16 +221,17 @@ public class BlockBreak3x3Logic {
 
             callBlockBreakEvent(player, block);
         }
-
-        // Set item lore back
-        meta.setLore(lore);
-        item.setItemMeta(meta);
-        player.getInventory().setItemInMainHand(item);
-
-        return blocksToDestroy.size();
     }
 
-    void callBlockBreakEvent(Player player, Block block)
+    private BlockFace getBlockFace(Player player) {
+        List<Block> lastTwoTargetBlocks = player.getLastTwoTargetBlocks(null, Main.mainConfig.blockFaceCheckRange);
+        if (lastTwoTargetBlocks.size() != 2) return null;
+        Block targetBlock = lastTwoTargetBlocks.get(1);
+        Block adjacentBlock = lastTwoTargetBlocks.get(0);
+        return targetBlock.getFace(adjacentBlock);
+    }
+
+    private void callBlockBreakEvent(Player player, Block block)
     {
         BlockBreakEvent event = new BlockBreakEvent(block, player);
         Bukkit.getPluginManager().callEvent(event);
