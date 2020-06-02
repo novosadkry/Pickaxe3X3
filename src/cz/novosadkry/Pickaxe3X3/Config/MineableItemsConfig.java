@@ -61,18 +61,19 @@ public class MineableItemsConfig {
             List<Material> items = new ArrayList<>();
 
             for (String s : yamlConfig.getStringList("pickaxe")) {
-                Material m = Material.valueOf(s);
-
-                if (m != null)
+                try {
+                    Material m = Material.valueOf(s);
                     items.add(m);
-                else
+                } catch (IllegalArgumentException e) {
                     System.out.println("[Pickaxe3X3] Material not found for '" + s + "'");
+                }
             }
 
             System.out.println("[Pickaxe3X3] Successfully loaded configuration file mineable.yml");
             mineableItemsConfig.pickaxeItems = items;
         } catch (Exception e) {
             System.out.println("[Pickaxe3X3] Error occurred while reading configuration file mineable.yml, switching to default settings");
+            e.printStackTrace();
         }
 
         return mineableItemsConfig;

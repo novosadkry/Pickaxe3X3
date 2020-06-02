@@ -36,13 +36,14 @@ public class OnBlockBreak implements Listener {
                             Block baseBlock = event.getBlock();
                             new BlockBreak3x3Logic(player, baseBlock, rows, columns).run();
 
-                            event.setCancelled(true);
                             break;
                         }
                     }
                 }
             }
-        } catch (Exception e) {
+        }
+        catch (NullPointerException ignored) { }
+        catch (Exception e) {
             e.printStackTrace();
         }
     }
