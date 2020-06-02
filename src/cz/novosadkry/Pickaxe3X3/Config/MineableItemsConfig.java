@@ -61,9 +61,12 @@ public class MineableItemsConfig {
             List<Material> items = new ArrayList<>();
 
             for (String s : yamlConfig.getStringList("pickaxe")) {
-                Material m = Material.matchMaterial(s);
+                Material m = Material.valueOf(s);
+
                 if (m != null)
                     items.add(m);
+                else
+                    System.out.println("[Pickaxe3X3] Material not found for '" + s + "'");
             }
 
             System.out.println("[Pickaxe3X3] Successfully loaded configuration file mineable.yml");
