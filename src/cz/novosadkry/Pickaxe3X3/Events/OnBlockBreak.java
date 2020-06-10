@@ -14,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.List;
 
 public class OnBlockBreak implements Listener {
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
         ItemStack item = player.getInventory().getItemInMainHand();
@@ -25,19 +25,17 @@ public class OnBlockBreak implements Listener {
         try {
             List<String> lore = item.getItemMeta().getLore();
 
-            if (lore != null) {
-                if (lore.size() > 0) {
-                    for (String s : lore) {
-                        if (s.startsWith(Main.mainConfig.prefix)) {
-                            String[] split = s.split(" ")[1].split("x");
-                            int columns = Integer.parseInt(split[0]);
-                            int rows = Integer.parseInt(split[1]);
+            if (lore != null && lore.size() > 0) {
+                for (String s : lore) {
+                    if (s.startsWith(Main.mainConfig.prefix)) {
+                        String[] split = s.split(" ")[1].split("x");
+                        int columns = Integer.parseInt(split[0]);
+                        int rows = Integer.parseInt(split[1]);
 
-                            Block baseBlock = event.getBlock();
-                            new BlockBreak3x3Logic(player, baseBlock, rows, columns).run();
+                        Block baseBlock = event.getBlock();
+                        new BlockBreak3x3Logic(player, baseBlock, rows, columns).run();
 
-                            break;
-                        }
+                        break;
                     }
                 }
             }
