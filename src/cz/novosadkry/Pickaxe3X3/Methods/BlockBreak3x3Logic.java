@@ -121,8 +121,10 @@ public class BlockBreak3x3Logic {
         item.setItemMeta(meta);
         player.getInventory().setItemInMainHand(item);
 
-        // Break blocks in blocksToDestroy
-        breakBlocks(blocksToDestroy, item);
+        // Check if it really is cleared (safety check)
+        if (!item.hasItemMeta())
+            // Break blocks in blocksToDestroy
+            breakBlocks(blocksToDestroy, item);
 
         // Set item lore back
         meta.setLore(lore);
