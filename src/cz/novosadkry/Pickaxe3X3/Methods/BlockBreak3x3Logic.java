@@ -20,6 +20,7 @@ import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 public class BlockBreak3x3Logic {
@@ -69,7 +70,7 @@ public class BlockBreak3x3Logic {
                 return 0;
 
             // Get surrounding blocks and break them with item-in-hand
-            int count = run(mineable, getSurroundingBlocks(), item);
+            int count = run(mineable, getSurroundingBlocks(blockFace), item);
 
             // Change the durability of the item-in-hand
             if (item.getItemMeta() instanceof Damageable) {
@@ -131,14 +132,13 @@ public class BlockBreak3x3Logic {
         return blocksToDestroy.length;
     }
 
-    private Block[][] getSurroundingBlocks() {
+    private Block[][] getSurroundingBlocks(BlockFace blockFace) {
         Block[][] blocksToDestroy = new Block[rows][columns];
         int offsetX = (1-columns)/2;
         int offsetY = (rows-1)/2;
 
         // Get player's face direction
         Vector playerFace = player.getEyeLocation().getDirection();
-        BlockFace blockFace = getBlockFace(player);
 
         // Starts from upper-left corner and continues to lower-right corner
         for (int y = 0; y < rows; y++) {
@@ -224,10 +224,16 @@ public class BlockBreak3x3Logic {
     }
 
     private BlockFace getBlockFace(Player player) {
-        List<Block> lastTwoTargetBlocks = player.getLastTwoTargetBlocks(null, Main.mainConfig.blockFaceCheckRange);
+        HashSet<Material> transparent = new HashSet<>();
+        transparent.add(Material.WATER);
+        transparent.add(Material.AIR);
+
+        List<Block> lastTwoTargetBlocks = player.getLastTwoTargetBlocks(transparent, Main.mainConfig.blockFaceCheckRange);
         if (lastTwoTargetBlocks.size() != 2) return null;
+
         Block targetBlock = lastTwoTargetBlocks.get(1);
         Block adjacentBlock = lastTwoTargetBlocks.get(0);
+
         return targetBlock.getFace(adjacentBlock);
     }
 
