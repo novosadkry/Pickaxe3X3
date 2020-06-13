@@ -75,9 +75,13 @@ public class BlockBreak3x3Logic {
             // Change the durability of the item-in-hand
             if (item.getItemMeta() instanceof Damageable) {
                 if (player.getGameMode() != GameMode.CREATIVE) {
+                    // Set damage to item-in-hand
                     Damageable damageMeta = (Damageable)item.getItemMeta();
                     damageMeta.setDamage(damageMeta.getDamage() + count);
+
+                    // Refresh item-in-hand
                     item.setItemMeta((ItemMeta)damageMeta);
+                    player.getInventory().setItemInMainHand(item);
 
                     // Destroy item-in-hand if durability drops below zero
                     if (item.getType().getMaxDurability() - damageMeta.getDamage() < 1) {
