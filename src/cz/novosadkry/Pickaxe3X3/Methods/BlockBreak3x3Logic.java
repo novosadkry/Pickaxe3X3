@@ -126,7 +126,7 @@ public class BlockBreak3x3Logic {
         player.getInventory().setItemInMainHand(item);
 
         // Check if it really is cleared (safety check)
-        if (item.getItemMeta().getLore() == null || item.getItemMeta().getLore().isEmpty())
+        if (!item.getItemMeta().hasLore())
             // Break blocks in blocksToDestroy
             breakBlocks(blocksToDestroy, item);
 
