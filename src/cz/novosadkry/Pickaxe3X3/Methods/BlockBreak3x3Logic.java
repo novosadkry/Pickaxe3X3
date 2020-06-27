@@ -232,6 +232,7 @@ public class BlockBreak3x3Logic {
     private BlockFace getBlockFace(Player player) {
         HashSet<Material> transparent = new HashSet<>();
         transparent.add(Material.WATER);
+        transparent.add(Material.LAVA);
         transparent.add(Material.AIR);
 
         List<Block> lastTwoTargetBlocks = player.getLastTwoTargetBlocks(transparent, Main.mainConfig.blockFaceCheckRange);
