@@ -7,6 +7,7 @@ import java.io.IOException;
 
 public class MainConfig {
     public String prefix = "Area:";
+    public String lock = "[Pickaxe3X3] lock";
     public int blockFaceCheckRange = 100;
 
     public static MainConfig load() {
@@ -22,6 +23,7 @@ public class MainConfig {
 
                 yamlConfig = YamlConfiguration.loadConfiguration(file);
                 yamlConfig.set("prefix", mainConfig.prefix);
+                yamlConfig.set("lock", mainConfig.lock);
                 yamlConfig.set("blockFaceCheckRange", mainConfig.blockFaceCheckRange);
                 yamlConfig.save(file);
 
@@ -34,6 +36,7 @@ public class MainConfig {
         try {
             yamlConfig = YamlConfiguration.loadConfiguration(file);
             mainConfig.prefix = yamlConfig.getString("prefix");
+            mainConfig.lock = yamlConfig.getString("lock");
             mainConfig.blockFaceCheckRange = yamlConfig.getInt("blockFaceCheckRange");
 
             System.out.println("[Pickaxe3X3] Successfully loaded configuration file main.yml");

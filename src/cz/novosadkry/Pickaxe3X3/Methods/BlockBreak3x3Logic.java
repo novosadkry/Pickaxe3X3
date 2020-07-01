@@ -116,21 +116,28 @@ public class BlockBreak3x3Logic {
         if (blocksToDestroy.length < 1)
             return 0;
 
-        // Preserve item lore before manually calling BlockBreak event
-        List<String> lore = new ArrayList<>(item.getItemMeta().getLore());
-
-        // Clear item lore before manually calling BlockBreak event to prevent stack overflow
         ItemMeta meta = item.getItemMeta();
-        meta.setLore(new ArrayList<>());
+
+        // Add safety lock to prevent stack overflow
+        List<String> lore = new ArrayList<>();
+        lore.add(Main.mainConfig.lock);
+
+        // Also preserve current lore
+        if (item.getItemMeta().hasLore())
+            lore.addAll(item.getItemMeta().getLore());
+
+        // Then set lore
+        meta.setLore(lore);
         item.setItemMeta(meta);
         player.getInventory().setItemInMainHand(item);
 
-        // Check if it really is cleared (safety check)
-        if (!item.getItemMeta().hasLore())
+        // Check if it really is set
+        if (item.getItemMeta().getLore().contains(Main.mainConfig.lock))
             // Break blocks in blocksToDestroy
             breakBlocks(blocksToDestroy, item);
 
-        // Set item lore back
+        // Remove safety lock and set lore back
+        lore.remove(Main.mainConfig.lock);
         meta.setLore(lore);
         item.setItemMeta(meta);
         player.getInventory().setItemInMainHand(item);

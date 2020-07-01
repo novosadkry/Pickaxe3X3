@@ -26,6 +26,9 @@ public class OnBlockBreak implements Listener {
             List<String> lore = item.getItemMeta().getLore();
 
             if (lore != null && lore.size() > 0) {
+                if (lore.contains(Main.mainConfig.lock))
+                    return;
+
                 for (String s : lore) {
                     if (s.startsWith(Main.mainConfig.prefix)) {
                         String[] split = s.split(" ")[1].split("x");
