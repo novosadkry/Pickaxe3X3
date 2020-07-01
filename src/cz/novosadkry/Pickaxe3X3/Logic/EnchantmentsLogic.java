@@ -7,6 +7,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 
 import java.util.Iterator;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class EnchantmentsLogic {
     public static ItemStack getDropSilkTouch(Block block) {
@@ -30,5 +31,14 @@ public class EnchantmentsLogic {
         }
 
         return null;
+    }
+
+    public static int getDropCountUnbreaking(int count, int level) {
+        float random = ThreadLocalRandom.current().nextFloat();
+
+        if (random > ((float)1 / (level + 1)))
+            return 0;
+        else
+            return count;
     }
 }

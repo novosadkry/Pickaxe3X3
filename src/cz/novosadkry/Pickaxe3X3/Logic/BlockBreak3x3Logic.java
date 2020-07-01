@@ -75,9 +75,15 @@ public class BlockBreak3x3Logic {
             // Change the durability of the item-in-hand
             if (item.getItemMeta() instanceof Damageable) {
                 if (player.getGameMode() != GameMode.CREATIVE) {
+                    int damage = count;
+
+                    // Get corresponding damage using the unbreaking formula
+                    if (item.getItemMeta().hasEnchant(Enchantment.DURABILITY))
+                        damage = EnchantmentsLogic.getDropCountUnbreaking(count, item.getItemMeta().getEnchantLevel(Enchantment.DURABILITY));
+
                     // Set damage to item-in-hand
                     Damageable damageMeta = (Damageable)item.getItemMeta();
-                    damageMeta.setDamage(damageMeta.getDamage() + count);
+                    damageMeta.setDamage(damageMeta.getDamage() + damage);
 
                     // Refresh item-in-hand
                     item.setItemMeta((ItemMeta)damageMeta);
