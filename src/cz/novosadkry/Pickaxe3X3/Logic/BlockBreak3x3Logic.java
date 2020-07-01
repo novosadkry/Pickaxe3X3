@@ -1,4 +1,4 @@
-package cz.novosadkry.Pickaxe3X3.Methods;
+package cz.novosadkry.Pickaxe3X3.Logic;
 
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
@@ -217,6 +217,8 @@ public class BlockBreak3x3Logic {
     }
 
     private void breakBlocks(Block[] blocksToDestroy, ItemStack item) {
+        Enchantment autoSmelt = Enchantment.getByKey(NamespacedKey.minecraft("autosmelt"));
+
         for (Block block : blocksToDestroy) {
             if (Main.jobs != null) {
                 JobsPlayer jPlayer = Jobs.getPlayerManager().getJobsPlayer(player);
@@ -224,12 +226,24 @@ public class BlockBreak3x3Logic {
             }
 
             if (item.getItemMeta().hasEnchant(Enchantment.SILK_TOUCH)) {
-                Material m = block.getType();
+                ItemStack drop = EnchantmentsLogic.getDropSilkTouch(block);
+
                 block.setType(Material.AIR);
                 block.getLocation().getWorld().dropItemNaturally(
                         block.getLocation(),
-                        new ItemStack(m, 1));
-            } else
+                        drop);
+            }
+
+            else if (autoSmelt != null && item.getItemMeta().hasEnchant(autoSmelt)) {
+                ItemStack drop = EnchantmentsLogic.getDropAutoSmelt(block);
+
+                block.setType(Material.AIR);
+                block.getLocation().getWorld().dropItemNaturally(
+                        block.getLocation(),
+                        drop);
+            }
+
+            else
                 block.breakNaturally(item);
 
             callBlockBreakEvent(player, block);
