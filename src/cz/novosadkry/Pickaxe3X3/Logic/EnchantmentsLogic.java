@@ -14,9 +14,9 @@ public class EnchantmentsLogic {
         return new ItemStack(block.getType(), 1);
     }
 
-    public static ItemStack getDropAutoSmelt(Block block) {
+    public static ItemStack getDropAutoSmelt(ItemStack item, Block block) {
         Iterator<Recipe> it = Bukkit.recipeIterator();
-        ItemStack drop = block.getDrops().iterator().next();
+        ItemStack drop = block.getDrops(item).iterator().next();
 
         while (it.hasNext()) {
             Recipe recipe = it.next();

@@ -241,7 +241,7 @@ public class BlockBreak3x3Logic {
             }
 
             else if (autoSmelt != null && item.getItemMeta().hasEnchant(autoSmelt)) {
-                ItemStack drop = EnchantmentsLogic.getDropAutoSmelt(block);
+                ItemStack drop = EnchantmentsLogic.getDropAutoSmelt(item, block);
 
                 block.setType(Material.AIR);
                 block.getLocation().getWorld().dropItemNaturally(
