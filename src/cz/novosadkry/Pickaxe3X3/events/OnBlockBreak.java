@@ -1,7 +1,7 @@
-package cz.novosadkry.Pickaxe3X3.Events;
+package cz.novosadkry.Pickaxe3X3.events;
 
-import cz.novosadkry.Pickaxe3X3.Logic.BlockBreak3x3Logic;
 import cz.novosadkry.Pickaxe3X3.Main;
+import cz.novosadkry.Pickaxe3X3.logic.BlockBreak3x3Logic;
 import org.bukkit.GameMode;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;

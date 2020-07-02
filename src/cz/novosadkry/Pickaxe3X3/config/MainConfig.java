@@ -1,4 +1,4 @@
-package cz.novosadkry.Pickaxe3X3.Config;
+package cz.novosadkry.Pickaxe3X3.config;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 

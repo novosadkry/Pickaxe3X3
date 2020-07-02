@@ -1,4 +1,4 @@
-package cz.novosadkry.Pickaxe3X3.Config;
+package cz.novosadkry.Pickaxe3X3.config;
 
 import com.google.common.io.Files;
 import org.bukkit.Material;

@@ -1,4 +1,4 @@
-package cz.novosadkry.Pickaxe3X3.Logic;
+package cz.novosadkry.Pickaxe3X3.logic;
 
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;

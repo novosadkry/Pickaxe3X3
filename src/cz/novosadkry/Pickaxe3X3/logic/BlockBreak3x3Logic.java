@@ -1,4 +1,4 @@
-package cz.novosadkry.Pickaxe3X3.Logic;
+package cz.novosadkry.Pickaxe3X3.logic;
 
 import com.bekvon.bukkit.residence.containers.Flags;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
