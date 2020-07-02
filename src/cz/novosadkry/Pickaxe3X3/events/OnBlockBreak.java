@@ -20,16 +20,13 @@ public class OnBlockBreak implements Listener {
         Player player = event.getPlayer();
         ItemStack item = player.getInventory().getItemInMainHand();
 
-        if (player.getGameMode() == GameMode.CREATIVE && !player.hasPermission("pickaxe3x3.use.creative"))
+        if (player.getGameMode() == GameMode.CREATIVE && !player.hasPermission(Main.mainConfig.permCreative))
             return;
 
         try {
             List<String> lore = item.getItemMeta().getLore();
 
             if (lore != null && lore.size() > 0) {
-                if (lore.contains(Main.mainConfig.lock))
-                    return;
-
                 for (String s : lore) {
                     if (s.startsWith(Main.mainConfig.lorePrefix)) {
                         String[] split = s.split(" ")[1].split("x");

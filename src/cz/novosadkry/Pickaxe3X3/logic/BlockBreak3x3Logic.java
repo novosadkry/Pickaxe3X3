@@ -18,13 +18,12 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockBreak3x3Logic {
+    private static HashSet<UUID> lock = new HashSet<>();
+
     private Player player;
     private Block baseBlock;
     private int rows;
@@ -56,6 +55,10 @@ public class BlockBreak3x3Logic {
     public int run() {
         ItemStack item = player.getInventory().getItemInMainHand();
         BlockFace blockFace = getBlockFace(player);
+
+        // Safety lock
+        if (BlockBreak3x3Logic.lock.contains(player.getUniqueId()))
+            return 0;
 
         if (blockFace != null) {
             List<Material> mineable;
@@ -129,31 +132,16 @@ public class BlockBreak3x3Logic {
         if (blocksToDestroy.length < 1)
             return 0;
 
-        ItemMeta meta = item.getItemMeta();
-
         // Add safety lock to prevent stack overflow
-        List<String> lore = new ArrayList<>();
-        lore.add(Main.mainConfig.lock);
-
-        // Also preserve current lore
-        if (item.getItemMeta().hasLore())
-            lore.addAll(item.getItemMeta().getLore());
-
-        // Then set lore
-        meta.setLore(lore);
-        item.setItemMeta(meta);
-        player.getInventory().setItemInMainHand(item);
+        lock.add(player.getUniqueId());
 
         // Check if it really is set
-        if (item.getItemMeta().getLore().contains(Main.mainConfig.lock))
+        if (lock.contains(player.getUniqueId()))
             // Break blocks in blocksToDestroy
             breakBlocks(blocksToDestroy, item);
 
-        // Remove safety lock and set lore back
-        lore.remove(Main.mainConfig.lock);
-        meta.setLore(lore);
-        item.setItemMeta(meta);
-        player.getInventory().setItemInMainHand(item);
+        // Remove safety lock
+        lock.remove(player.getUniqueId());
 
         return blocksToDestroy.length;
     }
