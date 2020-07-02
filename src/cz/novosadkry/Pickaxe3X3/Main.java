@@ -4,6 +4,7 @@ import com.bekvon.bukkit.residence.Residence;
 import com.gamingmesh.jobs.Jobs;
 import cz.novosadkry.Pickaxe3X3.config.MainConfig;
 import cz.novosadkry.Pickaxe3X3.config.MineableItemsConfig;
+import cz.novosadkry.Pickaxe3X3.enchantments.AreaEnchantment;
 import cz.novosadkry.Pickaxe3X3.events.OnBlockBreak;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -30,6 +31,9 @@ public class Main extends JavaPlugin {
 
         mainConfig = MainConfig.load();
         mineableItemsConfig = MineableItemsConfig.load();
+
+        AreaEnchantment.register();
+        System.out.println("[Pickaxe3X3] AreaEnchantment registered");
 
         getServer().getPluginManager().registerEvents(new OnBlockBreak(), this);
     }

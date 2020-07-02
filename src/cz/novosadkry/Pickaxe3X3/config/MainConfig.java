@@ -6,7 +6,8 @@ import java.io.File;
 import java.io.IOException;
 
 public class MainConfig {
-    public String prefix = "Area:";
+    public String lorePrefix = "Area:";
+    public String enchantKey = "area";
     public String lock = "[Pickaxe3X3] lock";
     public int blockFaceCheckRange = 100;
 
@@ -22,7 +23,8 @@ public class MainConfig {
                 file.createNewFile();
 
                 yamlConfig = YamlConfiguration.loadConfiguration(file);
-                yamlConfig.set("prefix", mainConfig.prefix);
+                yamlConfig.set("lorePrefix", mainConfig.lorePrefix);
+                yamlConfig.set("enchantKey", mainConfig.enchantKey);
                 yamlConfig.set("lock", mainConfig.lock);
                 yamlConfig.set("blockFaceCheckRange", mainConfig.blockFaceCheckRange);
                 yamlConfig.save(file);
@@ -35,7 +37,8 @@ public class MainConfig {
 
         try {
             yamlConfig = YamlConfiguration.loadConfiguration(file);
-            mainConfig.prefix = yamlConfig.getString("prefix");
+            mainConfig.lorePrefix = yamlConfig.getString("lorePrefix");
+            mainConfig.enchantKey = yamlConfig.getString("enchantKey");
             mainConfig.lock = yamlConfig.getString("lock");
             mainConfig.blockFaceCheckRange = yamlConfig.getInt("blockFaceCheckRange");
 
