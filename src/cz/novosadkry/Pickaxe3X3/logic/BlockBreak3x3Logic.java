@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockBreak3x3Logic {
     private Player player;
@@ -79,7 +80,13 @@ public class BlockBreak3x3Logic {
 
                     // Get corresponding damage using the unbreaking formula
                     if (item.getItemMeta().hasEnchant(Enchantment.DURABILITY))
-                        damage = EnchantmentsLogic.getDropCountUnbreaking(count, item.getItemMeta().getEnchantLevel(Enchantment.DURABILITY));
+                    {
+                        int level = item.getItemMeta().getEnchantLevel(Enchantment.DURABILITY);
+                        float random = ThreadLocalRandom.current().nextFloat();
+
+                        if (random > ((float)1 / (level + 1)))
+                            damage = 0;
+                    }
 
                     // Set damage to item-in-hand
                     Damageable damageMeta = (Damageable)item.getItemMeta();
@@ -223,42 +230,15 @@ public class BlockBreak3x3Logic {
     }
 
     private void breakBlocks(Block[] blocksToDestroy, ItemStack item) {
-        Enchantment autoSmelt = Enchantment.getByKey(NamespacedKey.minecraft("autosmelt"));
-
         for (Block block : blocksToDestroy) {
+            callBlockBreakEvent(player, block);
+
             if (Main.jobs != null) {
                 JobsPlayer jPlayer = Jobs.getPlayerManager().getJobsPlayer(player);
                 Jobs.action(jPlayer, new BlockActionInfo(block, ActionType.BREAK));
             }
 
-            if (item.getItemMeta().hasEnchant(Enchantment.SILK_TOUCH)) {
-                ItemStack drop = EnchantmentsLogic.getDropSilkTouch(block);
-
-                block.setType(Material.AIR);
-                block.getLocation().getWorld().dropItemNaturally(
-                        block.getLocation(),
-                        drop);
-            }
-
-            else if (autoSmelt != null && item.getItemMeta().hasEnchant(autoSmelt)) {
-                ItemStack drop = EnchantmentsLogic.getDropAutoSmelt(item, block);
-
-                if (drop != null)
-                {
-                    block.setType(Material.AIR);
-                    block.getLocation().getWorld().dropItemNaturally(
-                            block.getLocation(),
-                            drop);
-                }
-
-                else
-                    block.breakNaturally(item);
-            }
-
-            else
-                block.breakNaturally(item);
-
-            callBlockBreakEvent(player, block);
+            block.breakNaturally(item);
         }
     }
 
