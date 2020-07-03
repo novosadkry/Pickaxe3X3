@@ -1,7 +1,5 @@
 package cz.novosadkry.Pickaxe3X3.logic;
 
-import com.bekvon.bukkit.residence.containers.Flags;
-import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.gamingmesh.jobs.Jobs;
 import com.gamingmesh.jobs.actions.BlockActionInfo;
 import com.gamingmesh.jobs.container.ActionType;
@@ -201,16 +199,7 @@ public class BlockBreak3x3Logic {
                         || blocks[y][x].getDrops(item).size() < 1)
                     continue;
 
-                // Always set to 'true', there is a chance that a supported plugin won't load
-                boolean hasPerms = true;
-                if (Main.residence != null) {
-                    // Check if player has permissions to destroy a certain block inside a residence
-                    FlagPermissions perms = Main.residence.getPermsByLoc(blocks[y][x].getLocation());
-                    hasPerms = perms.playerHas(player, Flags.destroy, true);
-                }
-
-                if (hasPerms)
-                    blocksToDestroy.add(blocks[y][x]);
+                blocksToDestroy.add(blocks[y][x]);
             }
         }
 

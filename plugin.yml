@@ -3,5 +3,5 @@ author: novosadkry
 main: cz.novosadkry.Pickaxe3X3.Main
 version: 1.0
 api-version: 1.15
-softdepend: [Residence, Jobs]
+softdepend: [Jobs]
 commands:
