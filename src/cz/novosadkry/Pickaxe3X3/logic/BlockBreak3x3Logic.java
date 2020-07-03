@@ -215,13 +215,13 @@ public class BlockBreak3x3Logic {
         for (Block block : blocksToDestroy) {
             BlockBreakEvent event = callBlockBreakEvent(player, block);
 
-            if (Main.jobs != null) {
-                JobsPlayer jPlayer = Jobs.getPlayerManager().getJobsPlayer(player);
-                Jobs.action(jPlayer, new BlockActionInfo(block, ActionType.BREAK));
-            }
-
             if (!event.isCancelled())
             {
+                if (Main.jobs != null) {
+                    JobsPlayer jPlayer = Jobs.getPlayerManager().getJobsPlayer(player);
+                    Jobs.action(jPlayer, new BlockActionInfo(block, ActionType.BREAK));
+                }
+
                 if (event.isDropItems() && player.getGameMode() == GameMode.SURVIVAL)
                     block.breakNaturally(item);
                 else
