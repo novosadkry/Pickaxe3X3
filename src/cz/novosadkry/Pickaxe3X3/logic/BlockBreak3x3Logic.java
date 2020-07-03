@@ -226,7 +226,10 @@ public class BlockBreak3x3Logic {
                 Jobs.action(jPlayer, new BlockActionInfo(block, ActionType.BREAK));
             }
 
-            block.breakNaturally(item);
+            if (player.getGameMode() == GameMode.SURVIVAL)
+                block.breakNaturally(item);
+            else
+                block.setType(Material.AIR);
         }
     }
 
