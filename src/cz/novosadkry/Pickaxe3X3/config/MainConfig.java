@@ -9,6 +9,10 @@ public class MainConfig {
     public String lorePrefix = "Area:";
     public String enchantKey = "area";
     public String permCreative = "pickaxe3x3.use.creative";
+
+    public boolean allowEnchant = true;
+    public boolean allowLore = true;
+
     public int blockFaceCheckRange = 100;
 
     public static MainConfig load() {
@@ -25,6 +29,8 @@ public class MainConfig {
                 yamlConfig = YamlConfiguration.loadConfiguration(file);
                 yamlConfig.set("lorePrefix", mainConfig.lorePrefix);
                 yamlConfig.set("enchantKey", mainConfig.enchantKey);
+                yamlConfig.set("allowLore", mainConfig.allowLore);
+                yamlConfig.set("allowEnchant", mainConfig.allowEnchant);
                 yamlConfig.set("permCreative", mainConfig.permCreative);
                 yamlConfig.set("blockFaceCheckRange", mainConfig.blockFaceCheckRange);
                 yamlConfig.save(file);
@@ -39,6 +45,8 @@ public class MainConfig {
             yamlConfig = YamlConfiguration.loadConfiguration(file);
             mainConfig.lorePrefix = yamlConfig.getString("lorePrefix");
             mainConfig.enchantKey = yamlConfig.getString("enchantKey");
+            mainConfig.allowLore = yamlConfig.getBoolean("allowLore");
+            mainConfig.allowEnchant = yamlConfig.getBoolean("allowEnchant");
             mainConfig.permCreative = yamlConfig.getString("permCreative");
             mainConfig.blockFaceCheckRange = yamlConfig.getInt("blockFaceCheckRange");
 

@@ -16,6 +16,12 @@ public class Main extends JavaPlugin {
     public static MineableItemsConfig mineableItemsConfig;
 
     @Override
+    public void onLoad() {
+        mainConfig = MainConfig.load();
+        mineableItemsConfig = MineableItemsConfig.load();
+    }
+
+    @Override
     public void onEnable() {
         if (getServer().getPluginManager().isPluginEnabled("Residence"))
         {
@@ -28,9 +34,6 @@ public class Main extends JavaPlugin {
             jobs = Jobs.getInstance();
             System.out.println("[Pickaxe3X3] Jobs found");
         }
-
-        mainConfig = MainConfig.load();
-        mineableItemsConfig = MineableItemsConfig.load();
 
         AreaEnchantment.register();
         System.out.println("[Pickaxe3X3] AreaEnchantment registered");

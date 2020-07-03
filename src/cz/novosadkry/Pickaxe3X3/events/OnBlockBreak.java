@@ -24,33 +24,37 @@ public class OnBlockBreak implements Listener {
             return;
 
         try {
-            List<String> lore = item.getItemMeta().getLore();
+            if (Main.mainConfig.allowLore) {
+                List<String> lore = item.getItemMeta().getLore();
 
-            if (lore != null && lore.size() > 0) {
-                for (String s : lore) {
-                    if (s.startsWith(Main.mainConfig.lorePrefix)) {
-                        String[] split = s.split(" ")[1].split("x");
-                        int columns = Integer.parseInt(split[0]);
-                        int rows = Integer.parseInt(split[1]);
+                if (lore != null && lore.size() > 0) {
+                    for (String s : lore) {
+                        if (s.startsWith(Main.mainConfig.lorePrefix)) {
+                            String[] split = s.split(" ")[1].split("x");
+                            int columns = Integer.parseInt(split[0]);
+                            int rows = Integer.parseInt(split[1]);
 
-                        Block baseBlock = event.getBlock();
-                        new BlockBreak3x3Logic(player, baseBlock, rows, columns).run();
+                            Block baseBlock = event.getBlock();
+                            new BlockBreak3x3Logic(player, baseBlock, rows, columns).run();
 
-                        return;
+                            return;
+                        }
                     }
                 }
             }
 
-            AreaEnchantment areaEnchant = AreaEnchantment.getInstance();
+            if (Main.mainConfig.allowEnchant) {
+                AreaEnchantment areaEnchant = AreaEnchantment.getInstance();
 
-            if (item.getEnchantments().containsKey(areaEnchant)) {
-                int level = item.getEnchantmentLevel(areaEnchant);
+                if (item.getEnchantments().containsKey(areaEnchant)) {
+                    int level = item.getEnchantmentLevel(areaEnchant);
 
-                int columns = 1 + (level * 2);
-                int rows = 1 + (level * 2);
+                    int columns = 1 + (level * 2);
+                    int rows = 1 + (level * 2);
 
-                Block baseBlock = event.getBlock();
-                new BlockBreak3x3Logic(player, baseBlock, rows, columns).run();
+                    Block baseBlock = event.getBlock();
+                    new BlockBreak3x3Logic(player, baseBlock, rows, columns).run();
+                }
             }
         }
         catch (NullPointerException ignored) { }
