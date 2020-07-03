@@ -219,17 +219,20 @@ public class BlockBreak3x3Logic {
 
     private void breakBlocks(Block[] blocksToDestroy, ItemStack item) {
         for (Block block : blocksToDestroy) {
-            callBlockBreakEvent(player, block);
+            BlockBreakEvent event = callBlockBreakEvent(player, block);
 
             if (Main.jobs != null) {
                 JobsPlayer jPlayer = Jobs.getPlayerManager().getJobsPlayer(player);
                 Jobs.action(jPlayer, new BlockActionInfo(block, ActionType.BREAK));
             }
 
-            if (player.getGameMode() == GameMode.SURVIVAL)
-                block.breakNaturally(item);
-            else
-                block.setType(Material.AIR);
+            if (!event.isCancelled())
+            {
+                if (event.isDropItems() && player.getGameMode() == GameMode.SURVIVAL)
+                    block.breakNaturally(item);
+                else
+                    block.setType(Material.AIR);
+            }
         }
     }
 
@@ -248,9 +251,11 @@ public class BlockBreak3x3Logic {
         return targetBlock.getFace(adjacentBlock);
     }
 
-    private void callBlockBreakEvent(Player player, Block block)
+    private BlockBreakEvent callBlockBreakEvent(Player player, Block block)
     {
         BlockBreakEvent event = new BlockBreakEvent(block, player);
         Bukkit.getPluginManager().callEvent(event);
+
+        return event;
     }
 }
