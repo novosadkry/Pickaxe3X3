@@ -130,18 +130,21 @@ public class BlockBreak3x3Logic {
         if (blocksToDestroy.length < 1)
             return 0;
 
+        // Count the number of destroyed blocks
+        int count = 0;
+
         // Add safety lock to prevent stack overflow
         lock.add(player.getUniqueId());
 
         // Check if it really is set
         if (lock.contains(player.getUniqueId()))
             // Break blocks in blocksToDestroy
-            breakBlocks(blocksToDestroy, item);
+            count = breakBlocks(blocksToDestroy, item);
 
         // Remove safety lock
         lock.remove(player.getUniqueId());
 
-        return blocksToDestroy.length;
+        return count;
     }
 
     private Block[][] getSurroundingBlocks(BlockFace blockFace) {
@@ -206,7 +209,9 @@ public class BlockBreak3x3Logic {
         return blocksToDestroy.toArray(new Block[0]);
     }
 
-    private void breakBlocks(Block[] blocksToDestroy, ItemStack item) {
+    private int breakBlocks(Block[] blocksToDestroy, ItemStack item) {
+        int count = 0;
+
         for (Block block : blocksToDestroy) {
             BlockBreakEvent event = callBlockBreakEvent(player, block);
 
@@ -221,8 +226,12 @@ public class BlockBreak3x3Logic {
                     block.breakNaturally(item);
                 else
                     block.setType(Material.AIR);
+
+                count++;
             }
         }
+
+        return count;
     }
 
     private BlockFace getBlockFace(Player player) {
