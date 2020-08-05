@@ -1,9 +1,5 @@
 package cz.novosadkry.Pickaxe3X3.logic;
 
-import com.gamingmesh.jobs.Jobs;
-import com.gamingmesh.jobs.actions.BlockActionInfo;
-import com.gamingmesh.jobs.container.ActionType;
-import com.gamingmesh.jobs.container.JobsPlayer;
 import cz.novosadkry.Pickaxe3X3.Main;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -55,7 +51,7 @@ public class BlockBreak3x3Logic {
         BlockFace blockFace = getBlockFace(player);
 
         // Safety lock
-        if (BlockBreak3x3Logic.lock.contains(player.getUniqueId()))
+        if (lock.contains(player.getUniqueId()))
             return 0;
 
         if (blockFace != null) {
@@ -217,11 +213,6 @@ public class BlockBreak3x3Logic {
 
             if (!event.isCancelled())
             {
-                if (Main.jobs != null) {
-                    JobsPlayer jPlayer = Jobs.getPlayerManager().getJobsPlayer(player);
-                    Jobs.action(jPlayer, new BlockActionInfo(block, ActionType.BREAK));
-                }
-
                 if (event.isDropItems() && player.getGameMode() == GameMode.SURVIVAL)
                     block.breakNaturally(item);
                 else

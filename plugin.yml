@@ -1,7 +1,6 @@
 name: Pickaxe3X3
 author: novosadkry
 main: cz.novosadkry.Pickaxe3X3.Main
-version: 1.0
+version: 1.2
 api-version: 1.15
-softdepend: [Jobs]
 commands:
