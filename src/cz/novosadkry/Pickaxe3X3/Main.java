@@ -23,4 +23,10 @@ public class Main extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(new OnBlockBreak(), this);
     }
+
+    @Override
+    public void onDisable() {
+        AreaEnchantment.unregister();
+        System.out.println("[Pickaxe3X3] AreaEnchantment unregistered");
+    }
 }

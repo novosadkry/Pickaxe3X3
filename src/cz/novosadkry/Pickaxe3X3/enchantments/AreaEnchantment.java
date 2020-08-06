@@ -7,25 +7,26 @@ import org.bukkit.enchantments.EnchantmentTarget;
 import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.Field;
+import java.util.Map;
 
 @SuppressWarnings("deprecation")
 public class AreaEnchantment extends Enchantment {
     private static AreaEnchantment enchant;
-    private static NamespacedKey namespacedKey;
-
-    static {
-        namespacedKey = new NamespacedKey(Main.getPlugin(Main.class), Main.mainConfig.enchantKey);
-    }
 
     public static AreaEnchantment getInstance() {
-        if (enchant == null)
-            enchant = new AreaEnchantment(namespacedKey);
+        if (enchant == null) {
+            enchant = new AreaEnchantment(
+                    new NamespacedKey(Main.getPlugin(Main.class), Main.mainConfig.enchantKey)
+            );
+        }
 
         return enchant;
     }
 
     public static void register() {
-        if (Enchantment.getByKey(namespacedKey) != null)
+        AreaEnchantment enchant = getInstance();
+
+        if (Enchantment.getByKey(enchant.getKey()) != null)
             return;
 
         try {
@@ -34,9 +35,30 @@ public class AreaEnchantment extends Enchantment {
             acceptingNewField.set(null, true);
 
             Enchantment.registerEnchantment(getInstance());
+            Enchantment.stopAcceptingRegistrations();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-            acceptingNewField.set(null, false);
-            acceptingNewField.setAccessible(false);
+    public static void unregister() {
+        AreaEnchantment enchant = getInstance();
+
+        if (Enchantment.getByKey(enchant.getKey()) == null)
+            return;
+
+        try {
+            Field byKeyField = Enchantment.class.getDeclaredField("byKey");
+            Field byNameField = Enchantment.class.getDeclaredField("byName");
+
+            byKeyField.setAccessible(true);
+            byNameField.setAccessible(true);
+
+            Map<NamespacedKey, Enchantment> byKey = (Map<NamespacedKey, Enchantment>) byKeyField.get(null);
+            Map<String, Enchantment> byName = (Map<String, Enchantment>) byNameField.get(null);
+
+            byKey.remove(enchant.getKey());
+            byName.remove(enchant.getKey().getKey());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -48,7 +70,7 @@ public class AreaEnchantment extends Enchantment {
 
     @Override
     public String getName() {
-        return "Area";
+        return getKey().getKey();
     }
 
     @Override
