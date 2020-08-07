@@ -62,7 +62,7 @@ public class MineableItemsConfig {
 
             for (String s : yamlConfig.getStringList("pickaxe")) {
                 try {
-                    Material m = Material.valueOf(s);
+                    Material m = Material.getMaterial(s);
                     items.add(m);
                 } catch (IllegalArgumentException e) {
                     System.out.println("[Pickaxe3X3] Material not found for '" + s + "'");
